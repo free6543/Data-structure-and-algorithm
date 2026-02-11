@@ -1,0 +1,46 @@
+#include<iostream>
+using namespace std;
+#define MAX 1000001
+int next1[MAX] = {};
+int main()
+{
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	int q;
+	cin >> q;
+	for (int i = 0; i < q; i++)
+	{
+		int a;
+		cin >> a;
+//1 x y ：将元素 y 插入到 x 后面；
+		if (a == 1)
+		{
+			int x, y;
+			cin >> x >> y;
+			int z = next1[x];
+			next1[x] = y;
+			next1[y] = z;
+		}
+//2 x ：询问 x 后面的元素是什么。如果 x 是最后一个元素，则输出 0；
+		else if (a == 2)
+		{
+			int x;
+			cin >> x;
+			cout << next1[x] << endl;
+		}
+//3 x：从表中删除元素 x 后面的那个元素，不改变其他元素的先后顺序。
+		else if (a == 3)
+		{
+			int x;
+			cin >> x;
+			int y = next1[x];
+			if (y)
+			{
+				int z = next1[y];
+				next1[x] = z;
+				next1[y] = 0;
+			}
+		}
+	}
+	return 0;
+}
