@@ -1,0 +1,189 @@
+#include<iostream>
+using namespace std;
+//定义结构体，包含链表该节点存储的数据、该节点指向的后一个节点
+struct Node
+{
+	int data;
+	Node* next;
+};
+void printlist(Node* head);
+void inserthead(Node*& head, int newdata);
+void inserttail(Node*& head, int newdata);
+void insertbody(Node*& head, int newdata, int target);
+void deletehead(Node*& head);
+void deletetail(Node*& head);
+void deletebody(Node*& head, int target);
+void freelist(Node*& head);
+int main()
+{
+	//由于链表的节点是不连续存储，且数量动态变化，可能存在跨作用域的调用情况，链表的节点必须用new在堆区开辟内存空间，使用完delete,重置为nullptr空指针
+	//创建3个节点，并连接：10->20->30->nullptr;
+	Node* node1 = new Node;
+	node1->data = 10;
+	node1->next = nullptr;
+	Node* node2 = new Node;
+	node2->data = 20;
+	node2->next = nullptr;
+	Node* node3 = new Node;
+	node3->data = 30;
+	node3->next = nullptr;
+	node1->next = node2;
+	node2->next = node3;
+	//头指针记录开始节点
+	Node* head = node1;
+	printlist(head);
+	inserthead(head, 0);
+	inserttail(head, 40);
+	insertbody(head, 15, 20);
+	printlist(head);
+	deletehead(head);
+	deletetail(head);
+	deletebody(head, 15);
+	printlist(head);
+	freelist(head);
+	return 0;
+}
+//1.遍历链表，逐个访问所有节点(并打印）
+void printlist(Node* head)
+{
+	//用临时指针current遍历，避免改变head头指针
+	Node* current = head;
+	while (current!= nullptr)
+	{
+		cout << current->data << " ";
+		current = current->next;
+	}
+	cout << endl;
+}
+//2.插入节点
+//1、头部插入
+void inserthead(Node*& head,int newdata)
+{
+	Node* nodenew = new Node;
+	nodenew->data = newdata;
+	nodenew->next = head;
+	head = nodenew;
+}
+//2、尾部插入
+void inserttail(Node*& head, int newdata)
+{
+	Node* nodenew = new Node;
+	nodenew->data = newdata;
+	nodenew->next = nullptr;
+	if (head == nullptr)
+	{
+		head = nodenew;
+		return;
+	}
+	Node* current = head;
+	while (current->next != nullptr)
+	{
+		current = current->next;
+	}
+	current->next = nodenew;
+}
+//3、中间插入（指定位置前插入）
+void insertbody(Node*& head, int newdata, int target)
+{
+	if (head == nullptr)
+	{
+		return;
+	}
+	if (head->data == target)
+	{
+		inserthead(head, newdata); return;
+	}
+	//找到目标值target前一个的节点,在target前插入
+	Node* prev = head;
+	while (prev->next != nullptr && prev->next->data != target)
+	{
+		prev = prev->next;
+	}
+	//没找到
+	if (prev->next == nullptr)
+	{
+		return;
+	}
+	Node* nodenew = new Node;
+	nodenew->data = newdata;
+	nodenew->next = prev->next;
+	prev->next = nodenew;
+}
+//3.删除节点
+//1、头部删除
+void deletehead(Node*& head)
+{
+	if (head== nullptr)
+	{
+		return;
+	}
+	Node* temp = head;
+	head = head->next;
+	delete temp;
+}
+//2、尾部删除
+void deletetail(Node*& head)
+{
+	if (head == nullptr)
+	{
+		return;
+	}
+	if (head->next == nullptr)
+	{
+		delete head;
+		head = nullptr;
+		return;
+	}
+	//找到倒数第二个节点
+	Node* prev = head;
+	while (prev->next->next != nullptr)
+	{
+		prev = prev->next;
+	}
+	//temp储存最后一个节点
+	Node* temp = prev->next;
+	prev->next = nullptr;
+	delete temp;
+	//不能只写prev->next = nullptr;否则有未回收的堆区内存
+}
+//3、中间删除
+void deletebody(Node*& head, int target)
+{
+	//头指针为空
+	if (head == nullptr)
+	{
+		return;
+	}
+	//目标值对应头指针
+	if (head->data == target)
+	{
+		deletehead(head);
+		return;
+	}
+	//找到target前一个节点
+	Node* prev = head;
+	while (prev->next != nullptr && prev->next->data != target)
+	{
+		prev = prev->next;
+	}
+	//没找到
+	if (prev->next == nullptr)
+	{
+		return;
+	}
+	Node* temp = prev->next;
+	prev->next = temp->next;
+	delete temp;
+}
+//释放整个链表内存
+void freelist(Node*& head)
+{
+	Node* current = head;
+	while (current != nullptr)
+	{
+		Node* temp = current;
+		current = current->next;
+		delete temp;
+	}
+	head = nullptr;
+}
