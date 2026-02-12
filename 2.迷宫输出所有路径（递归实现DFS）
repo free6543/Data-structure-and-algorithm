@@ -1,0 +1,80 @@
+//走迷宫
+/*题目描述
+有一个 m×n 格的迷宫(表示有 m 行、n 列)，其中有可走的也有不可走的，如果用 1 表示可以走，0 表示不可以走，文件读入这 m×n 个数据和起始点、结束点（起始点和结束点都是用两个数据来描述的，分别表示这个点的行号和列号）。
+现在要你编程找出所有可行的道路，要求所走的路中没有重复的点，走时只能是上下左右四个方向。如果一条路都不可行，则输出相应信息（用 −1 表示无路）。
+优先顺序：左上右下。数据保证随机生成。
+
+输入格式
+第一行是两个数 m,n(1<m,n<15)，接下来是 m 行 n 列由 1 和 0 组成的数据，最后两行是起始点和结束点。
+输出格式
+所有可行的路径，描述一个点时用 (x,y) 的形式，除开始点外，其他的都要用 -> 表示方向。
+如果没有一条可行的路则输出 −1。
+*/
+#include<iostream>
+using namespace std;
+bool mi[15][15] = {};
+bool visited[15][15] = {};
+//用show二维数组储存路径坐标
+int show[500][2] = {};
+int a[4] = { 0,-1,0,1 };
+int b[4] = { -1,0,1,0 };
+int sx, sy, fx, fy;
+int m, n;
+int k = 0;
+bool cnt = 0;
+void print();
+void road(int tx, int ty);
+int main()
+{
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cin >> m >> n;
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			cin >> mi[i][j];
+		}
+	}
+	cin >> sx >> sy >> fx >> fy;
+	visited[sx - 1][sy - 1] = 1;
+	road(sx - 1, sy - 1);
+	if (!cnt)
+	{
+		cout << "-1";
+	}
+	return 0;
+}
+void print()
+{
+	cout << "(" << (sx) << "," << (sy) << ")->";
+	for (int i = 0; i < k-1; i++)
+	{
+		cout << "(" << (show[i][0] + 1) << "," << (show[i][1] + 1) << ")->";
+	}
+	cout << "(" << (show[k - 1][0] + 1) << "," << (show[k - 1][1] + 1) << ")\n";
+}
+void road(int tx, int ty)
+{
+	if (tx == (fx - 1) && ty == (fy - 1))
+	{
+		print();
+		cnt = 1;
+		return;
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		int x = tx + a[i];
+		int y = ty + b[i];
+		if (x >= 0 && x < m && y >= 0 && y < n && !visited[x][y] && mi[x][y])
+		{
+			visited[x][y] = 1;
+			show[k][0] = x;
+			show[k][1] = y;
+			k++;
+			road(x, y);
+			visited[x][y] = 0;
+			k--;
+		}
+	}
+}
