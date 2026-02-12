@@ -1,0 +1,71 @@
+//迷宫
+/*题目描述
+给定一个 N×M 方格的迷宫，迷宫里有 T 处障碍，障碍处不可通过。
+在迷宫中移动有上下左右四种方式，每次只能移动一个方格。数据保证起点上没有障碍。
+给定起点坐标和终点坐标，每个方格最多经过一次，问有多少种从起点坐标到终点坐标的方案。
+
+输入格式
+第一行为三个正整数 N,M,T，分别表示迷宫的长宽和障碍总数。
+第二行为四个正整数 SX,SY,FX,FY。SX,SY 代表起点坐标，FX,FY 代表终点坐标。
+接下来 T 行，每行两个正整数，表示障碍点的坐标。
+
+输出格式
+输出从起点坐标到终点坐标的方案总数。
+*/
+
+#include<iostream>
+#include<vector>
+using namespace std;
+int a[4] = { 0,0,1,-1 };
+int b[4] = { 1,-1,0,0 };
+int cnt = 0;
+void puzzle(vector<vector<bool>>& mi, const int& fx, const int& fy, int tx, int ty, const int& n, const int& m);
+int main()
+{
+	int n, m, t;
+	cin >> n >> m >> t;
+	vector<vector<bool>>mi(n, vector<bool>(m, 1));
+	int sx, sy, fx, fy;//坐标不要忘了-1
+	cin >> sx >> sy >> fx >> fy;
+	for (int i = 0; i < t; i++)
+	{
+		int x, y;
+		cin >> x >> y;
+		mi[x - 1][y - 1] = 0;
+	}
+	if (mi[fx - 1][fy - 1] == 0)
+	{
+		cout << cnt;
+	}
+	else
+	{
+		puzzle(mi, fx - 1, fy - 1, sx - 1, sy - 1, n, m);
+		cout << cnt;
+	}
+	return 0;
+}
+void puzzle(vector<vector<bool>>& mi,const int& fx,const int& fy, int tx, int ty,const int& n,const int& m)
+{
+	if (tx == fx && ty == fy)
+	{
+		cnt++;
+		return;
+	}
+	if (tx >= n || ty >= m || tx < 0 || ty < 0)
+	{
+		return;
+	}
+	if (mi[tx][ty] == 0)
+	{
+		return;
+	}
+    mi[tx][ty] = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		puzzle(mi, fx, fy, tx + a[i], ty + b[i], n, m);
+	}
+  /*mi[tx][ty] = 1; —— 回溯恢复当前位置为 “可走”
+  如果只需要一条路径或者判断是否连通，可以不用恢复;
+  这里统计有几条路径，所以要全部恢复*/
+    mi[tx][ty] = 1;
+}
