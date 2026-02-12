@@ -1,0 +1,105 @@
+//数组模拟双向链表
+/*题目描述
+给出 N 个结点，编号依次为 1…N，初始按编号从小到大排列成一条双向链表。
+接下来有 M 条指令，请按要求对链表进行修改。所有操作均保证合法。
+
+指令	|             含义
+1 x y	|将结点 x 插入到 y 的左侧（若 x=y 则忽略本条指令）。
+2 x y	|将结点 x 插入到 y 的右侧（若 x=y 则忽略本条指令）。
+3 x  	|删除结点 x；若 x 已被删除则忽略本条指令。
+操作结束后，请按从左到右的顺序输出当前链表中所有结点的编号。
+
+输入格式
+第一行输入两个正整数 N,M，表示链表初始的结点数和操作指令数。
+接下来 M 行，每行一条指令，如题意所述。
+
+输出格式
+输出一行，即：操作结束后，按从左到右的顺序输出当前链表中所有结点的编号。如果链表不存在结点，输出 Empty!。
+*/
+
+#include<iostream>
+using namespace std;
+const int MAX=500001;
+int l[MAX],r[MAX];
+bool del[MAX];//del数组记录是否完全删除数据，删1
+//将数据x从原链表中删除(数据未删除)
+void deleting(int x)
+{
+    l[r[x]]=l[x];
+    r[l[x]]=r[x];
+}
+//将数x插入结点y的右侧
+void insert(int x,int y)
+{
+    l[x]=y;
+    r[x]=r[y];
+    l[r[y]]=x;
+    r[y]=x;
+}
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int n,m;
+    cin>>n>>m;
+    //初始化l,r
+    r[0]=1;//头结点设为后1；
+    for(int i=1;i<=n;i++)
+    {
+        r[i]=i+1;
+        l[i]=i-1;
+    }
+    r[n]=0;//0表示没有数据,链表末尾
+    while(m--)
+    {
+        int k;
+        cin>>k;
+        if(k==1)
+        {
+            int x,y;
+            cin>>x>>y;
+            if(x==y||del[x])
+            {
+                continue;
+            }
+            deleting(x);
+            insert(x,l[y]);
+        }
+        else if(k==2)
+        {
+            int x,y;
+            cin>>x>>y;
+            if(x==y||del[x])
+            {
+                continue;
+            }
+            deleting(x);
+            insert(x,y);
+        }
+        else if(k==3)
+        {
+            int x;
+            cin>>x;
+            if(del[x])
+            {
+                continue;
+            }
+            deleting(x);
+            del[x]=1;
+        }
+    }
+    int cur=r[0];
+    if(!cur)
+    {
+        cout<<"Empty!";
+    }
+    else
+    {
+        while(cur)
+        {
+            cout<<cur<<" ";
+            cur=r[cur];
+        }
+    }
+    return 0;
+}
