@@ -1,0 +1,68 @@
+//迷宫寻路
+/*题目描述
+机器猫被困在一个矩形迷宫里。
+迷宫可以视为一个 n×m 矩阵，每个位置要么是空地，要么是墙。机器猫只能从一个空地走到其上、下、左、右的空地。
+机器猫初始时位于 (1,1) 的位置，问能否走到 (n,m) 位置。
+
+输入格式
+第一行，两个正整数 n,m。
+接下来 n 行，输入这个迷宫。每行输入一个长为 m 的字符串，# 表示墙，. 表示空地。
+
+输出格式
+仅一行，一个字符串。如果机器猫能走到 (n,m)，则输出 Yes；否则输出 No。
+*/
+
+#include<iostream>
+#include<vector>
+#include<stack>
+#include<utility>
+using namespace std;
+int a[4] = { 1,0,-1,0 };
+int b[4] = { 0,1,0,-1 };
+bool mi(const int& n, const int& m, const vector<string>& maze, vector<vector<bool>>visited, stack<pair<int, int>>& st);
+int main()
+{
+	int n, m;
+	cin >> n >> m;
+	vector<string>maze(n);
+	for (int i = 0; i < n; i++)
+	{
+		cin >> maze[i];
+	}
+	vector<vector<bool>>visited(n, vector<bool>(m, 0));
+	stack<pair<int, int>>st;
+	st.push({ 0,0 });
+	bool k = mi(n, m, maze, visited, st);
+	if (k)
+	{
+		cout << "Yes";
+	}
+	else
+	{
+		cout << "No";
+	}
+	return 0;
+}
+bool mi(const int& n, const int& m, const vector<string>& maze, vector<vector<bool>>visited, stack<pair<int, int>>&st)
+{
+	while (!st.empty())
+	{
+		pair<int, int>p = st.top();
+		st.pop();
+		if (p.first == (n - 1) && p.second == (m - 1))
+		{
+			return 1;
+		}
+		for (int i = 3; i >= 0; i--)
+		{
+			int tx = p.first + a[i];
+			int ty = p.second + b[i];
+			if (tx < n && tx >= 0 && ty < m && ty >= 0 && (maze[tx][ty] == '.') && (visited[tx][ty] == 0))
+			{
+				visited[tx][ty] = 1;
+				st.push({ tx,ty });
+			}
+		}
+	}
+	return 0;
+}
