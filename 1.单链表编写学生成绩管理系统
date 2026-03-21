@@ -1,0 +1,176 @@
+#include<iostream>
+#include<string>
+using namespace std;
+struct student
+{
+	int seat;//学生座位号
+	string name;//学生姓名
+	int score1;//语文
+	int score2;//英语
+	int score3;//数学
+	struct student* p;//指向下一个学生
+};
+ostream& operator<<(ostream& os, const student& obj)
+{
+	os << "学生座位号" << obj.seat << '\n';
+	os << "学生姓名" << obj.name << '\n';
+	os << "学生语文成绩" << obj.score1 << '\n';
+	os << "学生英语成绩" << obj.score2 << '\n';
+	os << "学生数学成绩" << obj.score3 << '\n';
+	return os;
+}
+//建立学生链表，结束输入-1或添加学生
+struct student* create(struct student* head)
+{
+	while (1)
+	{
+		struct student* newstu = new struct student;
+		cout << "请输入学生座位号";
+		cin >> newstu->seat;
+		if (newstu->seat == -1)
+		{
+			delete newstu;
+			return head;
+		}
+		cout << "请输入学生姓名";
+		cin >> newstu->name;
+		cout << "请分别输入语文、数学、英语成绩";
+		cin >> newstu->score1 >> newstu->score2 >> newstu->score3;
+		newstu->p = head;
+		head = newstu;
+	}
+}
+//显示全部学生记录
+void display(struct student* head)
+{
+	struct student* ptr = head;
+	if (ptr == nullptr)
+	{
+		cout << "链表为空\n";
+	}
+	else
+	{
+		while (ptr != nullptr)
+		{
+			cout << *ptr;
+			ptr = ptr->p;
+		}
+	}
+	cout << '\n';
+}
+//按座位号删除学生记录
+struct student* del(struct student* head, int i)
+{
+	if (head == nullptr)
+	{
+		return head;
+	}
+	else if (i == head->seat)
+	{
+		student* temp = head;
+		head = head->p;
+		delete temp;
+		return head;
+	}
+	else
+	{
+		//pre是目标的前一个结点
+		student* pre = head;
+		while (pre && pre->p)
+		{
+			if (pre->p->seat == i)
+			{
+				student* temp = pre->p;
+				pre->p = pre->p->p;
+				delete temp;
+				cout << "删除成功\n";
+				return head;
+			}
+			pre = pre->p;
+		}
+		cout << "查无此人\n";
+		return head;
+	}
+}
+//按座位号修改学生记录
+student* rev(student* head, int val)
+{
+	student* ptr = head;
+	while (ptr && ptr->seat != val)
+	{
+		ptr = ptr->p;
+	}
+	if (ptr == nullptr)
+	{
+		cout << "查无此人\n";
+		return head;
+	}
+	cout << "请输入要修改的学生姓名";
+	cin >> ptr->name;
+	cout << "请分别输入要修改的语文、数学、英语成绩";
+	cin >> ptr->score1 >> ptr->score2 >> ptr->score3;
+	cout << "修改成功\n";
+	return head;
+}
+//释放链表
+student* setnull(student* head)
+{
+	student* ptr = head;
+	while (ptr != nullptr)
+	{
+		ptr = ptr->p;
+		delete head;
+		head = ptr;
+	}
+	return head;
+}
+int main()
+{
+	student* head = nullptr;
+	int choice, seat;
+
+	while (true)
+	{
+		cout << "\n===== 学生链表管理 =====\n";
+		cout << "1. 添加学生\n";
+		cout << "2. 显示所有学生\n";
+		cout << "3. 删除学生（座位号）\n";
+		cout << "4. 修改学生（座位号）\n";
+		cout << "5. 清空链表\n";
+		cout << "0. 退出\n";
+		cout << "请输入操作：";
+		cin >> choice;
+
+		if (choice == 0) break;
+
+		switch (choice)
+		{
+		case 1:
+			head = create(head);
+			break;
+		case 2:
+			display(head);
+			break;
+		case 3:
+			cout << "输入要删除的座位号：";
+			cin >> seat;
+			head = del(head, seat);
+			break;
+		case 4:
+			cout << "输入要修改的座位号：";
+			cin >> seat;
+			head = rev(head, seat);
+			break;
+		case 5:
+			head = setnull(head);
+			cout << "链表已清空\n";
+			break;
+		default:
+			cout << "输入错误\n";
+		}
+	}
+
+	head = setnull(head);
+	cout << "程序已退出\n";
+	return 0;
+}
